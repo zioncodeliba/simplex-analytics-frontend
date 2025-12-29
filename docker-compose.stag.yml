@@ -1,0 +1,16 @@
+services:
+  simplex-analytics-frontend:
+    image: registry.webcase.me/node-projects/simplex-analytics/simplex-analytics-frontend:Staging
+    container_name: simplex-analytics-frontend-staging
+    env_file:
+      - .env
+    networks:
+      - traefik-reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.simplex-analytics-frontend-stag.rule=Host(`simplex3d-frontend.codeandcore.co.il`)"
+      - "traefik.http.services.simplex-analytics-frontend-stag.loadbalancer.server.port=3000"
+networks:
+  traefik-reverse-proxy:
+    name: traefik-reverse-proxy
+    external: true

@@ -1,0 +1,4 @@
+services:
+  simplex-analytics-frontend:
+    image: latest
+    container_name: simplex-analytics-frontend

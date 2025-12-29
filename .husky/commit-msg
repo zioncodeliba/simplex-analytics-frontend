@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Get commit message
+commit_msg=$(cat "$1")
+
+# Check for "initial commit" or first commit
+if [ "$commit_msg" = "initial commit" ] || git rev-parse --verify HEAD >/dev/null 2>&1; then
+    if [ "$commit_msg" = "initial commit" ]; then
+        exit 0
+    fi
+else
+    # If HEAD does not exist, it's the first commit
+    exit 0
+fi
+
+# Validate commit message with commitlint
+if ! npx commitlint --edit "$1"; then
+    echo ""
+    echo "❌ Commit message validation failed!"
+    echo ""
+    echo "📋 CONVENTIONAL COMMIT FORMAT REQUIRED:"
+    echo "   <type>(<scope>): <description>"
+    echo ""
+    echo "🔧 ALLOWED TYPES:"
+    echo "   feat     - A new feature"
+    echo "   fix      - A bug fix"
+    echo "   docs     - Documentation only changes"
+    echo "   style    - Changes that do not affect the meaning of the code"
+    echo "   refactor - A code change that neither fixes a bug nor adds a feature"
+    echo "   perf     - A code change that improves performance"
+    echo "   test     - Adding missing tests or correcting existing tests"
+    echo "   build    - Changes that affect the build system or external dependencies"
+    echo "   ci       - Changes to our CI configuration files and scripts"
+    echo "   chore    - Other changes that don't modify src or test files"
+    echo "   revert   - Reverts a previous commit"
+    echo ""
+    echo "✅ VALID EXAMPLES:"
+    echo "   feat: add user authentication"
+    echo "   fix: resolve login button bug"
+    echo "   feat(auth): implement OAuth2 integration"
+    echo "   docs: update README with setup instructions"
+    echo "   style: format code with prettier"
+    echo ""
+    echo "❌ COMMON MISTAKES:"
+    echo "   • Missing type (e.g., 'add new feature' → 'feat: add new feature')"
+    echo "   • Wrong type (e.g., 'added' → 'feat')"
+    echo "   • Missing colon after type (e.g., 'feat add' → 'feat: add')"
+    echo "   • Uppercase type (e.g., 'FEAT:' → 'feat:')"
+    echo "   • Empty description"
+    echo ""
+    echo "🚀 QUICK FIX:"
+    echo "   Run: npm run cz"
+    echo "   This will guide you through creating a proper commit message"
+    echo ""
+    exit 1
+fi
