@@ -83,6 +83,228 @@ type RealRow = {
   lastSeen: string
 }
 
+interface HeaderControlsProps {
+  searchTerm: string
+  setSearchTerm: (value: string) => void
+  selectedCount: number
+  columnFilters: Record<string, string>
+  handleColumnFilter: (column: string, value: string) => void
+  visibleColumns: { [key: string]: boolean }
+  toggleColumn: (column: string) => void
+  isFullScreen: boolean
+  setIsFullScreen: (open: boolean) => void
+  clearFilters: () => void
+  handleExportCSV: () => void
+  tableContent: React.ReactNode
+  hasNoReals: boolean
+}
+
+const HeaderControls: React.FC<HeaderControlsProps> = ({
+  searchTerm,
+  setSearchTerm,
+  selectedCount,
+  columnFilters,
+  handleColumnFilter,
+  visibleColumns,
+  toggleColumn,
+  isFullScreen,
+  setIsFullScreen,
+  clearFilters,
+  handleExportCSV,
+  tableContent,
+  hasNoReals,
+}) => (
+  <div className='flex flex-col gap-4'>
+    <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
+      <div>
+        <CardTitle style={{ color: '#203d4d' }}>REALS Data</CardTitle>
+        <CardDescription className='text-gray-600'>
+          Complete list of created REALS with detailed metrics
+          {selectedCount > 0 && ` (${selectedCount} selected)`}
+        </CardDescription>
+      </div>
+
+      <div className='flex flex-col md:flex-row gap-2'>
+        <div className='relative'>
+          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
+          <input
+            type='text'
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className={cn(
+              'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base bg-input-background transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+              'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+              'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pl-10 w-full md:w-64 bg-white border-gray-300'
+            )}
+            placeholder='Search REALS...'
+          />
+        </div>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant='outline'
+              className='bg-white border-gray-300'
+              style={{ color: '#203d4d' }}
+            >
+              <Filter className='w-4 h-4 mr-2' />
+              Filters
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-80 bg-white border-gray-300'>
+            <div className='space-y-4'>
+              <div className='flex items-center justify-between'>
+                <h4
+                  className='font-medium leading-none'
+                  style={{ color: '#203d4d' }}
+                >
+                  Column Filters
+                </h4>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={clearFilters}
+                  className='text-xs'
+                >
+                  Clear All
+                </Button>
+              </div>
+              <Separator />
+              <div className='space-y-3 max-h-64 overflow-y-auto'>
+                <div>
+                  <label
+                    htmlFor='project-filter'
+                    className='text-sm font-medium text-gray-600'
+                  >
+                    Project
+                  </label>
+
+                  <Input
+                    id='project-filter'
+                    placeholder='Filter by project...'
+                    value={columnFilters.project || ''}
+                    onChange={e =>
+                      handleColumnFilter('project', e.target.value)
+                    }
+                    className='mt-1 h-8 text-sm'
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor='created'
+                    className='text-sm font-medium text-gray-600'
+                  >
+                    Created By
+                  </label>
+                  <Input
+                    id='created'
+                    placeholder='Filter by creator...'
+                    value={columnFilters.createdBy || ''}
+                    onChange={e =>
+                      handleColumnFilter('createdBy', e.target.value)
+                    }
+                    className='mt-1 h-8 text-sm'
+                  />
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant='outline'
+              className='bg-white border-gray-300'
+              style={{ color: '#203d4d' }}
+            >
+              <Settings className='w-4 h-4 mr-2' />
+              Columns
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-56 bg-white border-gray-300'>
+            <div className='space-y-2'>
+              <h4
+                className='font-medium leading-none mb-2'
+                style={{ color: '#203d4d' }}
+              >
+                Toggle Columns
+              </h4>
+              <div className='space-y-2 max-h-64 overflow-y-auto'>
+                {Object.entries(visibleColumns).map(([key, visible]) => (
+                  <div key={key} className='flex items-center space-x-2'>
+                    <Checkbox
+                      id={key}
+                      checked={visible}
+                      onCheckedChange={() => toggleColumn(key)}
+                    />
+                    <label
+                      htmlFor={key}
+                      className='text-sm text-gray-600 capitalize'
+                    >
+                      {key.replaceAll(/([A-Z])/g, ' $1').trim()}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
+          <DialogTrigger asChild>
+            <Button
+              variant='outline'
+              className='bg-white border-gray-300'
+              style={{ color: '#203d4d' }}
+            >
+              <Maximize2 className='w-4 h-4 mr-2' />
+              Full Screen
+            </Button>
+          </DialogTrigger>
+          <DialogContent
+            className='max-w-[95vw] w-full p-0'
+            style={{ overflow: 'auto', height: '500px' }}
+          >
+            <DialogHeader className='p-6 pb-0'>
+              <div className='flex items-center justify-between'>
+                <DialogTitle style={{ color: '#203d4d' }}>
+                  REALS Data - Full Screen
+                </DialogTitle>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setIsFullScreen(false)}
+                  className='bg-white border-gray-300'
+                  style={{ color: '#203d4d' }}
+                >
+                  <Minimize2 className='w-4 h-4 mr-2' />
+                  Exit Full Screen
+                </Button>
+              </div>
+            </DialogHeader>
+            <div className='p-6 pt-4 h-full overflow-auto'>
+              {tableContent}
+
+              {hasNoReals && (
+                <div className='text-center py-8 text-gray-500'>
+                  No REALS found matching your search criteria.
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+        <Button
+          onClick={handleExportCSV}
+          className='text-white border-0'
+          style={{ backgroundColor: '#c0f4d1', color: '#203d4d' }}
+        >
+          <Download className='w-4 h-4 mr-2' />
+          Export CSV
+        </Button>
+      </div>
+    </div>
+  </div>
+)
+
 export function RealsTable({ onSelectionChange }: RealsTableProps) {
   const [sortField, setSortField] = useState<keyof RealRow | 'uniqueUsers'>(
     'realName'
@@ -421,205 +643,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
     toast.success('CSV file downloaded successfully!')
   }
 
-  // NOSONAR - ignore component inside component warningas
-  const HeaderControls = () => (
-    <div className='flex flex-col gap-4'>
-      <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
-        <div>
-          <CardTitle style={{ color: '#203d4d' }}>REALS Data</CardTitle>
-          <CardDescription className='text-gray-600'>
-            Complete list of created REALS with detailed metrics
-            {selectedRows.length > 0 && ` (${selectedRows.length} selected)`}
-          </CardDescription>
-        </div>
-
-        <div className='flex flex-col md:flex-row gap-2'>
-          <div className='relative'>
-            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
-            <input
-              type='text'
-              name=''
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className={cn(
-                'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base bg-input-background transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-                'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pl-10 w-full md:w-64 bg-white border-gray-300'
-              )}
-              placeholder='Search REALS...'
-            />
-          </div>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                className='bg-white border-gray-300'
-                style={{ color: '#203d4d' }}
-              >
-                <Filter className='w-4 h-4 mr-2' />
-                Filters
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-80 bg-white border-gray-300'>
-              <div className='space-y-4'>
-                <div className='flex items-center justify-between'>
-                  <h4
-                    className='font-medium leading-none'
-                    style={{ color: '#203d4d' }}
-                  >
-                    Column Filters
-                  </h4>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={clearFilters}
-                    className='text-xs'
-                  >
-                    Clear All
-                  </Button>
-                </div>
-                <Separator />
-                <div className='space-y-3 max-h-64 overflow-y-auto'>
-                  <div>
-                    <label
-                      htmlFor='project-filter'
-                      className='text-sm font-medium text-gray-600'
-                    >
-                      Project
-                    </label>
-
-                    <Input
-                      id='project-filter'
-                      placeholder='Filter by project...'
-                      value={columnFilters.project || ''}
-                      onChange={e =>
-                        handleColumnFilter('project', e.target.value)
-                      }
-                      className='mt-1 h-8 text-sm'
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='created'
-                      className='text-sm font-medium text-gray-600'
-                    >
-                      Created By
-                    </label>
-                    <Input
-                      id='created'
-                      placeholder='Filter by creator...'
-                      value={columnFilters.createdBy || ''}
-                      onChange={e =>
-                        handleColumnFilter('createdBy', e.target.value)
-                      }
-                      className='mt-1 h-8 text-sm'
-                    />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                className='bg-white border-gray-300'
-                style={{ color: '#203d4d' }}
-              >
-                <Settings className='w-4 h-4 mr-2' />
-                Columns
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-56 bg-white border-gray-300'>
-              <div className='space-y-2'>
-                <h4
-                  className='font-medium leading-none mb-2'
-                  style={{ color: '#203d4d' }}
-                >
-                  Toggle Columns
-                </h4>
-                <div className='space-y-2 max-h-64 overflow-y-auto'>
-                  {Object.entries(visibleColumns).map(([key, visible]) => (
-                    <div key={key} className='flex items-center space-x-2'>
-                      <Checkbox
-                        id={key}
-                        checked={visible}
-                        onCheckedChange={() => toggleColumn(key)}
-                      />
-                      <label
-                        htmlFor={key}
-                        className='text-sm text-gray-600 capitalize'
-                      >
-                        {key.replaceAll(/([A-Z])/g, ' $1').trim()}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-          <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
-            <DialogTrigger asChild>
-              <Button
-                variant='outline'
-                className='bg-white border-gray-300'
-                style={{ color: '#203d4d' }}
-              >
-                <Maximize2 className='w-4 h-4 mr-2' />
-                Full Screen
-              </Button>
-            </DialogTrigger>
-            <DialogContent className='max-w-[95vw] max-h-[95vh] w-full h-full p-0'>
-              <DialogHeader className='p-6 pb-0'>
-                <div className='flex items-center justify-between'>
-                  <DialogTitle style={{ color: '#203d4d' }}>
-                    REALS Data - Full Screen
-                  </DialogTitle>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={() => setIsFullScreen(false)}
-                    className='bg-white border-gray-300'
-                    style={{ color: '#203d4d' }}
-                  >
-                    <Minimize2 className='w-4 h-4 mr-2' />
-                    Exit Full Screen
-                  </Button>
-                </div>
-              </DialogHeader>
-              <div className='p-6 pt-4 h-full overflow-auto'>
-                <div className='mb-4'>{/* <HeaderControls /> */}</div>
-                <TableContent />
-                {/* <div style={{ margin: '15px 20px ' }}>
-                  <CustomPagination
-                    limit={limit}
-                    setLimit={setLimit}
-                    page={page}
-                    setPage={setPage}
-                    totalPages={totalPages}
-                  />
-                </div> */}
-                {filteredAndSortedData.length === 0 && (
-                  <div className='text-center py-8 text-gray-500'>
-                    No REALS found matching your search criteria.
-                  </div>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
-          <Button
-            onClick={handleExportCSV}
-            className='text-white border-0'
-            style={{ backgroundColor: '#c0f4d1', color: '#203d4d' }}
-          >
-            <Download className='w-4 h-4 mr-2' />
-            Export CSV
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
   // NOSONAR - ignore component inside component warning
   const TableContent = () => (
     <div className='overflow-x-auto'>
@@ -1129,7 +1152,21 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
     <>
       <Card className='bg-white border-gray-200'>
         <CardHeader>
-          <HeaderControls />
+          <HeaderControls
+            searchTerm={searchTerm}
+            setSearchTerm={value => setSearchTerm(value)}
+            selectedCount={selectedRows.length ?? 0}
+            columnFilters={columnFilters}
+            handleColumnFilter={handleColumnFilter}
+            visibleColumns={visibleColumns}
+            toggleColumn={toggleColumn}
+            isFullScreen={isFullScreen}
+            setIsFullScreen={setIsFullScreen}
+            clearFilters={clearFilters}
+            handleExportCSV={handleExportCSV}
+            tableContent={<TableContent />}
+            hasNoReals={filteredAndSortedData.length === 0}
+          />
         </CardHeader>
         <CardContent>
           <TableContent />

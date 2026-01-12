@@ -172,7 +172,7 @@ export function ProjectsSection({
             {isLoading || dashLoading ? (
               <div className='skeleton-number'></div>
             ) : (
-              data?.data.totalProjects
+              (data?.data.totalProjects ?? 0)
             )}
           </div>
           <p className='text-xs text-gray-500 mt-1'>Active projects</p>

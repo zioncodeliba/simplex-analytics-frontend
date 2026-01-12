@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from './baseQuery'
 
 // Define the structure of a single project item
 export interface ProjectItem {
@@ -23,9 +24,7 @@ export interface ProjectDataResponse {
 // Create the API
 export const projectData = createApi({
   reducerPath: 'projectData',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
   endpoints: builder => ({
     getProjectData: builder.query<
       ProjectDataResponse,

@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from '../baseQuery'
 // types.ts
 
 export interface SlideItem {
@@ -15,9 +16,7 @@ export interface PopupSlidesResponse {
 
 export const popupSlides = createApi({
   reducerPath: 'popupSlides',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
   endpoints: builder => ({
     getpopupSlides: builder.query<PopupSlidesResponse, { realId: string }>({
       query: ({ realId }) => ({

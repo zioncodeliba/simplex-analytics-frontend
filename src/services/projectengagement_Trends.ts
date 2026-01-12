@@ -1,11 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from './baseQuery'
 
 export const engagement_Trends = createApi({
   reducerPath: 'engagement_Trends',
-
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
 
   endpoints: builder => ({
     getEngagement_Trends: builder.query({

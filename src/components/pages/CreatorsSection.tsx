@@ -195,8 +195,8 @@ export function CreatorsSection({
                   tick={{ fontSize: 10, fill: '#6b7280' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [
-                    formatValue(value, chartMetric),
+                  formatter={(value: number | undefined) => [
+                    formatValue(value ?? 0, chartMetric),
                     metricLabels[chartMetric as keyof typeof metricLabels],
                   ]}
                   labelStyle={{ color: '#203d4d' }}
@@ -405,8 +405,8 @@ export function CreatorsSection({
                     tick={{ fontSize: 12, fill: '#6b7280' }}
                   />
                   <Tooltip
-                    formatter={(value: number) => [
-                      formatValue(value, chartMetric),
+                    formatter={(value: number | undefined) => [
+                      formatValue(value ?? 0, chartMetric),
                       metricLabels[chartMetric as keyof typeof metricLabels],
                     ]}
                     labelStyle={{ color: '#203d4d' }}

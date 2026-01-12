@@ -53,7 +53,7 @@ const DialogContent = React.forwardRef<
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
-      style={{ height: '90%', padding: '20px' }}
+      style={{ width: '90%', padding: '20px' }}
       ref={ref}
       data-slot='dialog-content'
       aria-describedby={undefined}

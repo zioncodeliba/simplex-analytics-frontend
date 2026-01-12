@@ -1,11 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from './baseQuery'
 
 export const projectChartApi = createApi({
   reducerPath: 'projectChartApi',
 
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
 
   endpoints: builder => ({
     getProjectChart: builder.query({

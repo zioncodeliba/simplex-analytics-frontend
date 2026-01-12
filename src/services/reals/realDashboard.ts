@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from '../baseQuery'
 
 // 🟢 Define the expected response type from the API
 export interface RealsDashboardData {
@@ -11,18 +12,14 @@ export interface RealsDashboardData {
   totalRealsOpened: number
 }
 
-// 🟢 Define the full response structure
 export interface RealsDashboardResponse {
   message: string
   data: RealsDashboardData
 }
 
-// 🟢 Create the API slice
 export const realsDashboard = createApi({
   reducerPath: 'realsDashboard',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
   endpoints: builder => ({
     getRealsDashboard: builder.query<
       RealsDashboardResponse,
@@ -36,5 +33,4 @@ export const realsDashboard = createApi({
   }),
 })
 
-// 🟢 Export auto-generated hook
 export const { useGetRealsDashboardQuery } = realsDashboard

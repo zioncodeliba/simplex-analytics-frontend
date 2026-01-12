@@ -111,7 +111,10 @@ export function RealDrilldown({
   }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='!max-w-[95vw] max-h-[90vh] w-full sm:!max-w-[95vw]'>
+      <DialogContent
+        className='!max-w-[95vw] max-h-[90vh] w-full sm:!max-w-[95vw]'
+        style={{ overflow: 'auto' }}
+      >
         <DialogHeader>
           <DialogTitle style={{ color: '#203d4d' }}>
             Real Drilldown: {realName}

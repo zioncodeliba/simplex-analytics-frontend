@@ -48,6 +48,201 @@ import dayjs from 'dayjs'
 import { DateContext } from '@/hook/context'
 import Image from 'next/image'
 import nothing from '@/assets/paper.png'
+
+interface HeaderControlsProps {
+  searchTerm: string
+  setSearchTerm: (value: string) => void
+  selectedCount: number
+  columnFilters: Record<string, string>
+  handleColumnFilter: (column: string, value: string) => void
+  visibleColumns: { [key: string]: boolean }
+  toggleColumn: (column: string) => void
+  isFullScreen: boolean
+  setIsFullScreen: (open: boolean) => void
+  clearFilters: () => void
+  handleExportCSV: () => void
+  tableContent: React.ReactNode
+  hasNoProjects: boolean
+}
+
+const HeaderControls: React.FC<HeaderControlsProps> = ({
+  searchTerm,
+  setSearchTerm,
+  selectedCount,
+  columnFilters,
+  handleColumnFilter,
+  visibleColumns,
+  toggleColumn,
+  isFullScreen,
+  setIsFullScreen,
+  clearFilters,
+  handleExportCSV,
+  tableContent,
+  hasNoProjects,
+}) => (
+  <div className='flex flex-col gap-4 '>
+    <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
+      <div>
+        <CardTitle style={{ color: '#203d4d' }}>Projects Data</CardTitle>
+        <CardDescription className='text-gray-600'>
+          Complete list of projects with performance metrics
+          {selectedCount > 0 && ` (${selectedCount} selected)`}
+        </CardDescription>
+      </div>
+      <div className='flex flex-col md:flex-row gap-2'>
+        <div className='relative'>
+          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
+          <Input
+            placeholder='Search projects...'
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className='pl-10 w-full md:w-64 bg-white border-gray-300'
+          />
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant='outline'
+              className='bg-white border-gray-300'
+              style={{ color: '#203d4d' }}
+            >
+              <Filter className='w-4 h-4 mr-2' />
+              Filters
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-80 bg-white border-gray-300'>
+            <div className='space-y-4'>
+              <div className='flex items-center justify-between'>
+                <h4
+                  className='font-medium leading-none'
+                  style={{ color: '#203d4d' }}
+                >
+                  Column Filters
+                </h4>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={clearFilters}
+                  className='text-xs'
+                >
+                  Clear All
+                </Button>
+              </div>
+              <Separator />
+              <div className='space-y-3 max-h-64 overflow-y-auto'>
+                <div>
+                  <label className='text-sm font-medium text-gray-600'>
+                    Status
+                  </label>
+                  <Input
+                    placeholder='Filter by status...'
+                    value={columnFilters.status || ''}
+                    onChange={e => handleColumnFilter('status', e.target.value)}
+                    className='mt-1 h-8 text-sm'
+                  />
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant='outline'
+              className='bg-white border-gray-300'
+              style={{ color: '#203d4d' }}
+            >
+              <Settings className='w-4 h-4 mr-2' />
+              Columns
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-56 bg-white border-gray-300'>
+            <div className='space-y-2'>
+              <h4
+                className='font-medium leading-none mb-2'
+                style={{ color: '#203d4d' }}
+              >
+                Toggle Columns
+              </h4>
+              <div className='space-y-2 max-h-64 overflow-y-auto'>
+                {Object.entries(visibleColumns).map(([key, visible]) => (
+                  <div key={key} className='flex items-center space-x-2'>
+                    <Checkbox
+                      id={key}
+                      checked={visible}
+                      onCheckedChange={() => toggleColumn(key)}
+                    />
+                    <label
+                      htmlFor={key}
+                      className='text-sm text-gray-600 capitalize'
+                    >
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <div className=''>
+          <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
+            <DialogTrigger asChild>
+              <Button
+                variant='outline'
+                className='bg-white border-gray-300'
+                style={{ color: '#203d4d' }}
+              >
+                <Maximize2 className='w-4 h-4 mr-2' />
+                Full Screen
+              </Button>
+            </DialogTrigger>
+            <DialogContent
+              className='max-w-[95vw] max-h-[95vh] w-full h-full p-0'
+              style={{ overflow: 'auto' }}
+            >
+              <DialogHeader className='p-6 pb-0'>
+                <div className='flex items-center justify-between'>
+                  <DialogTitle style={{ color: '#203d4d' }}>
+                    Projects Data - Full Screen
+                  </DialogTitle>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => setIsFullScreen(false)}
+                    className='bg-white border-gray-300'
+                    style={{ color: '#203d4d' }}
+                  >
+                    <Minimize2 className='w-4 h-4 mr-2' />
+                    Exit Full Screen
+                  </Button>
+                </div>
+              </DialogHeader>
+              <div className='p-6 pt-4h-full overflow-auto'>
+                <div className='mb-4'>
+                  {/* header controls in full screen */}
+                </div>
+                {tableContent}
+                {hasNoProjects && (
+                  <div className='text-center py-8 text-gray-500'>
+                    No projects found matching your search criteria.
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <Button
+          onClick={handleExportCSV}
+          className='text-white border-0'
+          style={{ backgroundColor: '#c0f4d1', color: '#203d4d' }}
+        >
+          <Download className='w-4 h-4 mr-2' />
+          Export CSV
+        </Button>
+      </div>
+    </div>
+  </div>
+)
 interface ProjectsTableProps {
   dateRange?: { from: Date; to: Date }
   onSelectionChange?: (selectedIds: number[]) => void
@@ -186,168 +381,6 @@ export function ProjectsTable({
       [column]: !prev[column as keyof typeof prev],
     }))
   }
-  const HeaderControls = () => (
-    <div className='flex flex-col gap-4 '>
-      <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
-        <div>
-          <CardTitle style={{ color: '#203d4d' }}>Projects Data</CardTitle>
-          <CardDescription className='text-gray-600'>
-            Complete list of projects with performance metrics
-            {selectedRows.length > 0 && ` (${selectedRows.length} selected)`}
-          </CardDescription>
-        </div>
-        <div className='flex flex-col md:flex-row gap-2'>
-          <div className='relative'>
-            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
-            <Input
-              placeholder='Search projects...'
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className='pl-10 w-full md:w-64 bg-white border-gray-300'
-            />
-          </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                className='bg-white border-gray-300'
-                style={{ color: '#203d4d' }}
-              >
-                <Filter className='w-4 h-4 mr-2' />
-                Filters
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-80 bg-white border-gray-300'>
-              <div className='space-y-4'>
-                <div className='flex items-center justify-between'>
-                  <h4
-                    className='font-medium leading-none'
-                    style={{ color: '#203d4d' }}
-                  >
-                    Column Filters
-                  </h4>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={clearFilters}
-                    className='text-xs'
-                  >
-                    Clear All
-                  </Button>
-                </div>
-                <Separator />
-                <div className='space-y-3 max-h-64 overflow-y-auto'>
-                  <div>
-                    <label className='text-sm font-medium text-gray-600'>
-                      Status
-                    </label>
-                    <Input
-                      placeholder='Filter by status...'
-                      value={columnFilters.status || ''}
-                      onChange={e =>
-                        handleColumnFilter('status', e.target.value)
-                      }
-                      className='mt-1 h-8 text-sm'
-                    />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                className='bg-white border-gray-300'
-                style={{ color: '#203d4d' }}
-              >
-                <Settings className='w-4 h-4 mr-2' />
-                Columns
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-56 bg-white border-gray-300'>
-              <div className='space-y-2'>
-                <h4
-                  className='font-medium leading-none mb-2'
-                  style={{ color: '#203d4d' }}
-                >
-                  Toggle Columns
-                </h4>
-                <div className='space-y-2 max-h-64 overflow-y-auto'>
-                  {Object.entries(visibleColumns).map(([key, visible]) => (
-                    <div key={key} className='flex items-center space-x-2'>
-                      <Checkbox
-                        id={key}
-                        checked={visible}
-                        onCheckedChange={() => toggleColumn(key)}
-                      />
-                      <label
-                        htmlFor={key}
-                        className='text-sm text-gray-600 capitalize'
-                      >
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-          <div className=''>
-            <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant='outline'
-                  className='bg-white border-gray-300'
-                  style={{ color: '#203d4d' }}
-                >
-                  <Maximize2 className='w-4 h-4 mr-2' />
-                  Full Screen
-                </Button>
-              </DialogTrigger>
-              <DialogContent className='max-w-[95vw] max-h-[95vh] w-full h-full p-0'>
-                <DialogHeader className='p-6 pb-0'>
-                  <div className='flex items-center justify-between'>
-                    <DialogTitle style={{ color: '#203d4d' }}>
-                      Projects Data - Full Screen
-                    </DialogTitle>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={() => setIsFullScreen(false)}
-                      className='bg-white border-gray-300'
-                      style={{ color: '#203d4d' }}
-                    >
-                      <Minimize2 className='w-4 h-4 mr-2' />
-                      Exit Full Screen
-                    </Button>
-                  </div>
-                </DialogHeader>
-                <div className='p-6 pt-4h-full overflow-auto'>
-                  <div className='mb-4'>{/* <HeaderControls /> */}</div>
-                  <TableContent />
-                  {filteredAndSortedData?.length === 0 && (
-                    <div className='text-center py-8 text-gray-500'>
-                      No projects found matching your search criteria.
-                    </div>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-          <Button
-            onClick={handleExportCSV}
-            className='text-white border-0'
-            style={{ backgroundColor: '#c0f4d1', color: '#203d4d' }}
-          >
-            <Download className='w-4 h-4 mr-2' />
-            Export CSV
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-
   const handleRowSelect = (projectId: number) => {
     const newSelectedRows = selectedRows.includes(projectId)
       ? selectedRows.filter(id => id !== projectId)
@@ -807,7 +840,21 @@ export function ProjectsTable({
     <div className=''>
       <Card className='bg-white border-gray-200'>
         <CardHeader>
-          <HeaderControls />
+          <HeaderControls
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedCount={selectedRows.length}
+            columnFilters={columnFilters}
+            handleColumnFilter={handleColumnFilter}
+            visibleColumns={visibleColumns}
+            toggleColumn={toggleColumn}
+            isFullScreen={isFullScreen}
+            setIsFullScreen={setIsFullScreen}
+            clearFilters={clearFilters}
+            handleExportCSV={handleExportCSV}
+            tableContent={<TableContent />}
+            hasNoProjects={(filteredAndSortedData?.length ?? 0) === 0}
+          />
         </CardHeader>
         <CardContent>
           <TableContent />

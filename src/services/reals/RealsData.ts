@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from '../baseQuery'
 
 // 🟢 1️⃣ Define the Type for a single Real
 export interface RealData {
@@ -26,9 +27,7 @@ export interface RealsApiResponse {
 // 🟢 3️⃣ Create the API Slice
 export const RealsData = createApi({
   reducerPath: 'RealsData',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
   endpoints: builder => ({
     getRealsData: builder.query<
       RealsApiResponse,

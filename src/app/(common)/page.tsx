@@ -2,6 +2,7 @@ import { CreatorsSection } from '@/components/pages/CreatorsSection'
 import { ProjectsSection } from '@/components/pages/ProjectsSection'
 import { RealsSection } from '@/components/pages/RealsSection'
 import { UnitsSection } from '@/components/pages/UnitsSection'
+import { Metadata } from 'next'
 
 function page() {
   return (
@@ -40,3 +41,9 @@ function page() {
   )
 }
 export default page
+export const metadata: Metadata = {
+  title: 'Management Dashboard',
+  icons: {
+    icon: '/logo-simplex-fv.png',
+  },
+}

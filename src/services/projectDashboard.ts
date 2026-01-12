@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from './baseQuery'
 interface DashboardData {
   totalProjects: number
   totalReals: number
@@ -14,9 +14,7 @@ interface DashboardResponse {
 
 export const projectDashboard = createApi({
   reducerPath: 'projectDashboard',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
   endpoints: builder => ({
     getDashboard: builder.query<
       DashboardResponse,
