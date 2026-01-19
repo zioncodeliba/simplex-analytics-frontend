@@ -16,6 +16,11 @@ import Image from 'next/image'
 import { DateContext } from '@/hook/context'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+
+type HeaderProps = {
+  name: string
+}
+
 const Navigation = () => (
   <nav className='flex items-center space-x-6'>
     <div className='flex items-center space-x-2'>
@@ -32,7 +37,7 @@ const Navigation = () => (
     </div>
   </nav>
 )
-const Header = () => (
+const Header: React.FC<HeaderProps> = ({ name }) => (
   <header
     style={{ backgroundColor: '#203d4d' }}
     className='border-b border-gray-600 px-4 lg:px-6 py-3'
@@ -48,7 +53,7 @@ const Header = () => (
             <div className='flex items-center space-x-2 cursor-pointer'>
               <User className='w-4 h-4 text-gray-300' />
               <span className='text-gray-300 text-sm hidden md:block'>
-                {/* {user || 'User'} */}Webvoltz
+                {name}
               </span>
               <ChevronDown className='w-3 h-3 text-gray-300' />
             </div>
@@ -89,6 +94,7 @@ const Header = () => (
 )
 
 const Navbar = () => {
+  const [name, setName] = useState<string>('')
   const urlpath = usePathname()
   let title = 'Management'
   if (urlpath?.includes('reals')) {
@@ -120,10 +126,14 @@ const Navbar = () => {
       endDate: dateRange?.to?.toISOString()?.slice(0, 10) ?? undefined,
     })
   }, [dateRange, setDate])
+  useEffect(() => {
+    const storedName = localStorage.getItem('simplex_name') ?? ''
+    setName(storedName)
+  }, [])
 
   return (
     <div>
-      <Header />
+      <Header name={name} />
 
       <div className='container mx-auto px-4 py-4 max-w-7xl'>
         <div className='mb-4'>

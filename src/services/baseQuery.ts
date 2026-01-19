@@ -1,18 +1,12 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import Cookies from 'js-cookie'
 
-const baseQuerys = fetchBaseQuery({
+const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  credentials: 'include',
   prepareHeaders: headers => {
     headers.set('Content-Type', 'application/json')
-
-    const token = Cookies.get('token')
-
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`)
-    }
-
     return headers
   },
 })
-export default baseQuerys
+
+export default baseQuery

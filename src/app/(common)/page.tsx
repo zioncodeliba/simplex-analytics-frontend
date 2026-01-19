@@ -15,26 +15,10 @@ function page() {
           <CreatorsSection overview />
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4'>
-          <ProjectsSection
-            // dateRange={dateRange}
-            chartOnly
-            // selectedItems={selectedProjects}
-          />
-          <RealsSection
-            // dateRange={dateRange}
-            chartOnly
-            // selectedItems={selectedReals}
-          />
-          <UnitsSection
-            // dateRange={dateRange}
-            chartOnly
-            // selectedItems={selectedUnits}
-          />
-          <CreatorsSection
-            // dateRange={dateRange}
-            chartOnly
-            // selectedItems={selectedCreators}
-          />
+          <ProjectsSection chartOnly />
+          <RealsSection chartOnly />
+          <UnitsSection chartOnly />
+          <CreatorsSection chartOnly />
         </div>
       </div>
     </div>

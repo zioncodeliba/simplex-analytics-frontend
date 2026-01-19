@@ -28,11 +28,11 @@ import {
 } from 'recharts'
 
 interface CreatorsSectionProps {
-  dateRange?: { from: Date; to: Date }
-  expanded?: boolean
-  overview?: boolean
-  chartOnly?: boolean
-  selectedItems?: number[]
+  // readonly dateRange?: { from: Date; to: Date }
+  readonly expanded?: boolean
+  readonly overview?: boolean
+  readonly chartOnly?: boolean
+  // readonly selectedItems?: number[]
 }
 
 export function CreatorsSection({
@@ -92,12 +92,11 @@ export function CreatorsSection({
   }
 
   const formatValue = (value: number, metric: string) => {
-    switch (metric) {
-      case 'avg_time':
-        return `${value}min`
-      default:
-        return value.toLocaleString()
+    if (metric === 'avg_time') {
+      return `${value}min`
     }
+
+    return value.toLocaleString()
   }
 
   const chartColors = ['#203d4d', '#c0f4d1', '#8dd3c7', '#ffffb3', '#bebada']

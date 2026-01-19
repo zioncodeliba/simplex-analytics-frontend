@@ -208,8 +208,8 @@ export function UnitsSection({
                         tick={{ fontSize: 10, fill: '#6b7280' }}
                       />
                       <Tooltip
-                        formatter={(value: number) => [
-                          formatValue(value, chartMetric),
+                        formatter={(value: number | undefined) => [
+                          formatValue(value || 0, chartMetric),
                           metricLabels[
                             chartMetric as keyof typeof metricLabels
                           ],
@@ -462,7 +462,7 @@ export function UnitsSection({
                           tick={{ fontSize: 12, fill: '#6b7280' }}
                         />
                         <Tooltip
-                          formatter={(value: number) => [
+                          formatter={(value: number | undefined) => [
                             formatValue(
                               chartMetric === 'avg_time'
                                 ? Number(Number(value ?? 0).toFixed(2))

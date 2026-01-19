@@ -5,15 +5,8 @@ import React from 'react'
 const page = () => {
   return (
     <div className='container mx-auto px-4 py-4 max-w-7xl'>
-      <RealsSection
-        //   dateRange={dateRange}
-        expanded
-        //   selectedItems={selectedReals}
-      />
-      <RealsTable
-      // dateRange={dateRange}
-      // onSelectionChange={handleRealsSelectionChange}
-      />
+      <RealsSection expanded />
+      <RealsTable />
     </div>
   )
 }

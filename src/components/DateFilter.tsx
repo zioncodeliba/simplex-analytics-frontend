@@ -1,14 +1,15 @@
 'use client'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
+import { subMonths } from 'date-fns'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { Calendar } from './ui/calendar'
 import '../styles/globals.css'
 interface DateFilterProps {
-  onDateRangeChange: (range: {
-    from: Date | undefined
-    to: Date | undefined
+  readonly onDateRangeChange: (range: {
+    readonly from: Date | undefined
+    readonly to: Date | undefined
   }) => void
 }
 
@@ -17,8 +18,8 @@ export function DateFilter({ onDateRangeChange }: DateFilterProps) {
     from: Date | undefined
     to: Date | undefined
   }>({
-    from: undefined,
-    to: undefined,
+    from: subMonths(new Date(), 1),
+    to: new Date(),
   })
   const [isOpen, setIsOpen] = useState(false)
 
@@ -105,7 +106,6 @@ export function DateFilter({ onDateRangeChange }: DateFilterProps) {
           </Button>
         </PopoverTrigger>
 
-        {/* Give the popover a fixed/min width so two months have room */}
         <PopoverContent
           className='w-[540px] max-w-[90vw] p-2 bg-white border-gray-300 rounded-md'
           align='end'
@@ -115,7 +115,7 @@ export function DateFilter({ onDateRangeChange }: DateFilterProps) {
             selected={{ from: dateRange.from, to: dateRange.to }}
             onSelect={handleDateSelect}
             numberOfMonths={2}
-            pagedNavigation // Ensures arrows navigate by 2 months if desired, or remove for 1
+            pagedNavigation
           />
         </PopoverContent>
       </Popover>

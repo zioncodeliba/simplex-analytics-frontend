@@ -312,8 +312,11 @@ export function RealsSection({
                     />
 
                     <Tooltip
-                      formatter={(value: number, name: string) => [
-                        formatValue(value),
+                      formatter={(
+                        value: number | undefined,
+                        name: string | undefined
+                      ) => [
+                        formatValue(value || 0),
                         showBreakdown
                           ? name
                           : timelineLabels[
@@ -697,8 +700,11 @@ export function RealsSection({
                       />
 
                       <Tooltip
-                        formatter={(value: number, name: string) => [
-                          formatValue(value),
+                        formatter={(
+                          value: number | undefined,
+                          name: string | undefined
+                        ) => [
+                          formatValue(value || 0),
                           showBreakdown
                             ? name
                             : timelineLabels[

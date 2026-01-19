@@ -557,7 +557,7 @@ export function ProjectsSection({
                       tick={{ fontSize: 12, fill: '#6b7280' }}
                     />
                     <Tooltip
-                      formatter={(value: number) => [
+                      formatter={(value: number | undefined) => [
                         `${chartMetric === 'avg_time' ? value + 'Min' : value}`,
                         chartMetric,
                       ]}
