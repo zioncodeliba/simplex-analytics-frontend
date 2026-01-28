@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Simplex Analytics Frontend
+
+A Next.js-based analytics dashboard frontend application.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn package manager
+- Git
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd simplex-analytics-frontend
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+Or if you prefer yarn:
+
+```bash
+yarn install
+```
+
+### Running the Development Server
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Or with yarn:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-## Learn More
+### Building for Production
 
-To learn more about Next.js, take a look at the following resources:
+Create an optimized production build:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Or with yarn:
 
-## Deploy on Vercel
+```bash
+yarn build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Running the Production Build
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Start the production server:
+
+```bash
+npm start
+```
+
+Or with yarn:
+
+```bash
+yarn start
+```
+
+### Other Available Commands
+
+- **Linting**: `npm run lint` - Run ESLint to check code quality
+- **Type Check**: `npm run type-check` - Verify TypeScript types
+- **Format**: `npm run format` - Format code with Prettier
+- **Test**: `npm test` - Run tests
+
+### Docker Support
+
+Build and run using Docker:
+
+```bash
+docker build -t simplex-analytics-frontend .
+docker run -p 3000:3000 simplex-analytics-frontend
+```
+
+Or using docker-compose:
+
+```bash
+docker-compose up
+```
+
+For staging environment:
+
+```bash
+docker-compose -f docker-compose.stag.yml up
+```
+
+## Project Structure
+
+- `src/` - Source code directory
+  - `app/` - Next.js app router pages
+  - `components/` - React components
+  - `services/` - API and data services
+  - `store/` - State management
+  - `styles/` - Global styles
+  - `hook/` - Custom React hooks
+  - `assets/` - Static assets
+- `public/` - Public static files
+- `next.config.ts` - Next.js configuration
+- `tailwind.config.cjs` - Tailwind CSS configuration
+- `tsconfig.json` - TypeScript configuration
+
+## Environment Variables
+
+Create a `.env.local` file in the root directory with necessary environment variables:
+
+```bash
+NEXT_PUBLIC_API_URL=<your-api-url>
+```
+
+## Technologies Used
+
+- **Next.js** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **React Query/SWR** - Data fetching
+- **ESLint** - Code quality
+- **Docker** - Containerization

@@ -1,5 +1,6 @@
 import { RealsSection } from '@/components/pages/RealsSection'
 import { RealsTable } from '@/components/pages/RealsTable'
+import { Metadata } from 'next'
 import React from 'react'
 
 const page = () => {
@@ -11,3 +12,9 @@ const page = () => {
   )
 }
 export default page
+export const metadata: Metadata = {
+  title: 'Reals Management ',
+  icons: {
+    icon: '/logo-simplex-fv.png',
+  },
+}

@@ -94,14 +94,12 @@ export function RealsSection({
     if (!trednsData?.data) return
 
     if (!showBreakdown) {
-      // --- Normal (no breakdown)
       const formatted = trednsData.data.map(item => ({
         date: `${item._id}T00:00:00Z`,
         value: item.value,
       }))
       setChartDatas(formatted)
     } else {
-      // --- Breakdown mode (keep full object)
       const formatted = trednsData.data.map(item => ({
         ...item,
         date: `${item.date}T00:00:00Z`,
@@ -114,18 +112,6 @@ export function RealsSection({
     return Object.keys(chartDatas[0]).filter(k => k !== 'date')
   }, [chartDatas, showBreakdown])
   const avgtime = ((dashboard?.data.avgTimePerUser ?? 0) / 60).toFixed(2)
-  const realsData = {
-    totalCreated: 1247,
-    totalOpened: {
-      count: 1089,
-      rate: 87.3,
-    },
-    uniqueUsers: 3456,
-    totalVisits: 12847,
-    avgTimePerUser: 18.4, // changed from totalTime to avgTimePerUser
-    avgSlidesRetention: 68.4, // percentage
-    avgTimeRetention: 72.8, // percentage
-  }
 
   const timelineLabels = {
     reals_created: 'REALS Created',
@@ -167,7 +153,6 @@ export function RealsSection({
     '#9e94d6', // darker pastel purple highlight
   ]
 
-  // Overview mode - just the key metric card
   if (overview) {
     return (
       <Card className='bg-white border-gray-200'>
@@ -574,7 +559,16 @@ export function RealsSection({
                   className='text-2xl font-bold'
                   style={{ color: '#203d4d' }}
                 >
-                  {realsData.avgTimeRetention}%
+                  <div
+                    className='text-2xl font-bold'
+                    style={{ color: '#203d4d' }}
+                  >
+                    {isLoading || dashLoading ? (
+                      <div className='skeleton-number'></div>
+                    ) : (
+                      (dashboard?.data.avgTimeRetention ?? 0) + '%'
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

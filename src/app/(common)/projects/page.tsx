@@ -1,5 +1,6 @@
 import { ProjectsSection } from '@/components/pages/ProjectsSection'
 import { ProjectsTable } from '@/components/pages/ProjectsTable'
+import { Metadata } from 'next'
 import React from 'react'
 
 const page = () => {
@@ -11,3 +12,9 @@ const page = () => {
   )
 }
 export default page
+export const metadata: Metadata = {
+  title: 'Projects Management ',
+  icons: {
+    icon: '/logo-simplex-fv.png',
+  },
+}

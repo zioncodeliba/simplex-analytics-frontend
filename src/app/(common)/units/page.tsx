@@ -1,5 +1,6 @@
 import { UnitsSection } from '@/components/pages/UnitsSection'
 import { UnitsTable } from '@/components/pages/UnitsTable'
+import { Metadata } from 'next'
 import React from 'react'
 
 const page = () => {
@@ -11,3 +12,9 @@ const page = () => {
   )
 }
 export default page
+export const metadata: Metadata = {
+  title: 'Units Management ',
+  icons: {
+    icon: '/logo-simplex-fv.png',
+  },
+}

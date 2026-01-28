@@ -46,7 +46,7 @@ import {
 import { useGetRealsDataQuery } from '@/services/reals/RealsData'
 import { CustomPagination } from '../CustomPagination'
 import { cn } from '../ui/utils'
-import { useDebounce } from '@/hook/useDebounce'
+import { formatMsToMinSec, useDebounce } from '@/hook/useDebounce'
 import { DateContext } from '@/hook/context'
 import { RealDrilldown } from './RealDrilldown'
 import Image from 'next/image'
@@ -72,8 +72,8 @@ type RealRow = {
   slides: number
   slidesRetention: number | null | undefined
   interactions: number | null | undefined
-  totalDuration: string | null | undefined
-  timeRetention: number | null | undefined
+  totalDuration: number
+  avgTimeRetention: number | null | undefined
   visits: number
   uniqUsers: number
   currentUrl: string
@@ -329,7 +329,7 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
     slidesRetention: true,
     interactions: true,
     totalDuration: true,
-    timeRetention: true,
+    avgTimeRetention: true,
     visits: true,
     uniqueUsers: true,
     avgTime: true,
@@ -369,7 +369,7 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
     slidesRetention: 'slidesRetention',
     interactions: 'interactions',
     totalDuration: 'totalDuration',
-    timeRetention: 'timeRetention',
+    avgTimeRetention: 'avgTimeRetention',
     visits: 'visits',
     uniqueUsers: 'uniqUsers', // UI key -> data key
     avgTime: 'avgTime',
@@ -379,22 +379,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
   const handleRowClick = (real: string, realname: string) => {
     setPopupid({ real, realname })
     setDrilldownOpen(true)
-  }
-  // Helpers for sorting by specific types
-  const parseDurationToSeconds = (value: string | null | undefined): number => {
-    if (!value) return Number.NEGATIVE_INFINITY
-    // Supports mm:ss or hh:mm:ss
-    const parts = value.split(':').map(Number)
-    if (parts.some(n => Number.isNaN(n))) return Number.NEGATIVE_INFINITY
-    if (parts.length === 2) {
-      const [mm, ss] = parts
-      return mm * 60 + ss
-    }
-    if (parts.length === 3) {
-      const [hh, mm, ss] = parts
-      return hh * 3600 + mm * 60 + ss
-    }
-    return Number.NEGATIVE_INFINITY
   }
 
   const getComparableValue = (
@@ -411,10 +395,9 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
         return t.isValid() ? t.valueOf() : Number.NEGATIVE_INFINITY
       }
       case 'totalDuration':
-        return parseDurationToSeconds(value as string | null | undefined)
       case 'slidesRetention':
       case 'interactions':
-      case 'timeRetention':
+      case 'avgTimeRetention':
       case 'avgTime':
         return typeof value === 'number' ? value : Number.NEGATIVE_INFINITY
       default:
@@ -448,10 +431,12 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
           dataRows.length
         : 0,
     totalDuration: '-',
-    timeRetention:
+    avgTimeRetention:
       dataRows.length > 0
-        ? dataRows.reduce((sum, real) => sum + (real.timeRetention ?? 0), 0) /
-          dataRows.length
+        ? dataRows.reduce(
+            (sum, real) => sum + (real?.avgTimeRetention ?? 0),
+            0
+          ) / dataRows.length
         : 0,
     visits: dataRows.reduce((sum, real) => sum + (real.visits ?? 0), 0),
     uniqueUsers: dataRows.reduce((sum, real) => sum + (real.uniqUsers ?? 0), 0),
@@ -589,7 +574,7 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
             return 'Interactions'
           case 'totalDuration':
             return 'Total Duration'
-          case 'timeRetention':
+          case 'avgTimeRetention':
             return 'Time Retention (%)'
           case 'visits':
             return 'Visits'
@@ -749,10 +734,10 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                 Duration <ChevronDown className='w-4 h-4 inline ml-1' />
               </TableHead>
             )}
-            {visibleColumns.timeRetention && (
+            {visibleColumns.avgTimeRetention && (
               <TableHead
                 className='text-right cursor-pointer'
-                onClick={() => handleSort('timeRetention')}
+                onClick={() => handleSort('avgTimeRetention')}
                 style={{ color: '#203d4d' }}
               >
                 Time Ret % <ChevronDown className='w-4 h-4 inline ml-1' />
@@ -867,9 +852,9 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                     {aggregatedData.totalDuration}
                   </TableCell>
                 )}
-                {visibleColumns.timeRetention && (
+                {visibleColumns.avgTimeRetention && (
                   <TableCell className='text-right font-bold'>
-                    {Number(aggregatedData.timeRetention).toFixed(1)}%
+                    {Number(aggregatedData.avgTimeRetention).toFixed(1)}%
                   </TableCell>
                 )}
                 {visibleColumns.visits && (
@@ -1064,12 +1049,13 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                   )}
                   {visibleColumns.totalDuration && (
                     <TableCell className='text-right'>
-                      {real.totalDuration ?? '-'}
+                      {formatMsToMinSec(real?.totalDuration)}
                     </TableCell>
                   )}
-                  {visibleColumns.timeRetention && (
+
+                  {visibleColumns.avgTimeRetention && (
                     <TableCell className='text-right'>
-                      {real.timeRetention ?? '-'}
+                      {real.avgTimeRetention ?? '-'}
                     </TableCell>
                   )}
                   {visibleColumns.visits && (

@@ -8,6 +8,7 @@ export interface RealsDashboardData {
   totalVisits: number
   distinctVisitors: number
   avgTimePerUser: number
+  avgTimeRetention: number
   slidesRetention: number
   totalRealsOpened: number
 }
