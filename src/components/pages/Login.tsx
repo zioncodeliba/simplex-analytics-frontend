@@ -35,6 +35,7 @@ const Login = () => {
 
       localStorage.setItem('simplex_name', res.data.name)
       router.push('/')
+      Cookies.remove('token')
     } catch {
       Cookies.remove('token')
       setHasToken(false)
@@ -80,7 +81,7 @@ const Login = () => {
               target='_blank'
               href={
                 process.env.CLIENT_LOGIN ||
-                'https://devreals.simplex3d.com/authenticator/login'
+                'https://devreals2.simplex3d.com/authenticator/login'
               }
             >
               Return to Login

@@ -2,20 +2,20 @@ import { CreatorsSection } from '@/components/pages/CreatorsSection'
 import { ProjectsSection } from '@/components/pages/ProjectsSection'
 import { RealsSection } from '@/components/pages/RealsSection'
 import { UnitsSection } from '@/components/pages/UnitsSection'
-import axios from 'axios'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
 async function page() {
   const cookieStore = await cookies()
-  const token = cookieStore.get('access_token')?.value
+  const token = cookieStore.get('accessToken')?.value
 
-  if (token) {
+  if (cookieStore) {
     try {
-      await axios.get(`${process.env.API_URL}/auth/save-login-time`, {
+      await fetch(`${process.env.API_URL}/auth/save-login-time`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        cache: 'no-store',
       })
     } catch {
       // ingnore this

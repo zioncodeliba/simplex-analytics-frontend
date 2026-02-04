@@ -1024,7 +1024,9 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                   )}
                   {visibleColumns.sharingTitle && (
                     <TableCell className='text-gray-700'>
-                      {real.sharingTitle ?? '-'}
+                      {real.sharingTitle == '' || real.sharingTitle == null
+                        ? '-'
+                        : real.sharingTitle}
                     </TableCell>
                   )}
                   {visibleColumns.createdBy && (

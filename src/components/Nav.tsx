@@ -14,11 +14,25 @@ import Navtab from './Navtab'
 import simplexLogo from '../assets/logo-simplex-light.png'
 import Image from 'next/image'
 import { DateContext } from '@/hook/context'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { LogoutButton } from './LogOut'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog'
+import SyncButton from './Sync'
 
 type HeaderProps = {
   name: string
+  router: ReturnType<typeof useRouter>
 }
 
 const Navigation = () => (
@@ -59,10 +73,37 @@ const Header: React.FC<HeaderProps> = ({ name }) => (
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
-            <DropdownMenuItem className='cursor-pointer'>
-              <LogOut className='mr-2 h-4 w-4' />
-              <span>Log out</span>
+            <DropdownMenuItem>
+              <SyncButton />
             </DropdownMenuItem>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem
+                  className='cursor-pointer'
+                  onSelect={e => e.preventDefault()}
+                >
+                  <LogOut className='mr-2 h-4 w-4' />
+                  Logout
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Log out?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You will be logged out of your account.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction>
+                    <LogoutButton />
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </DropdownMenuContent>
         </DropdownMenu>
         <Sheet>
@@ -95,6 +136,7 @@ const Header: React.FC<HeaderProps> = ({ name }) => (
 
 const Navbar = () => {
   const [name, setName] = useState<string>('')
+  const router = useRouter()
   const urlpath = usePathname()
   let title = 'Management'
   if (urlpath?.includes('reals')) {
@@ -133,8 +175,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <Header name={name} />
-
+      <Header name={name} router={router} />
       <div className='container mx-auto px-4 py-4 max-w-7xl'>
         <div className='mb-4'>
           <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
