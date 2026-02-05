@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -26,6 +26,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useGetCreatorsOverviewQuery } from '@/services/creators/creatorsOverview'
+import { DateContext } from '@/hook/context'
 
 interface CreatorsSectionProps {
   // readonly dateRange?: { from: Date; to: Date }
@@ -44,38 +46,29 @@ export function CreatorsSection({
 }: CreatorsSectionProps) {
   const [chartMetric, setChartMetric] = useState('reals_count')
   const [showBreakdown, _] = useState(false)
+  const dateContext = useContext(DateContext)
+  const { data: creatorsResponse } = useGetCreatorsOverviewQuery({
+    startDate: dateContext?.date?.startDate ?? undefined,
+    endDate: dateContext?.date?.endDate ?? undefined,
+  })
 
-  // Mock data - in real app this would come from API
-  const creatorsData = {
-    totalActive: 28,
-    avgRealsPerCreator: 44.5,
-    totalReals: 1247, // For tooltip calculation
-    avgTimePerCreator: 15.7, // changed from total time to avg time per creator
+  const creatorsData = creatorsResponse?.data.overview ?? {
+    totalActive: 0,
+    avgRealsPerCreator: 0,
+    totalReals: 0,
+    avgTimePerCreator: 0,
+    totalUniqueUsers: 0,
   }
 
-  const topCreatorsData = {
-    reals_count: [
-      { name: 'Sarah Johnson', value: 87, id: 1 },
-      { name: 'Mike Chen', value: 76, id: 2 },
-      { name: 'Emma Davis', value: 65, id: 3 },
-      { name: 'David Wilson', value: 58, id: 4 },
-      { name: 'Lisa Anderson', value: 54, id: 5 },
-    ],
-    total_visits: [
-      { name: 'Sarah Johnson', value: 3247, id: 1 },
-      { name: 'Mike Chen', value: 2856, id: 2 },
-      { name: 'Emma Davis', value: 2543, id: 3 },
-      { name: 'David Wilson', value: 2289, id: 4 },
-      { name: 'Lisa Anderson', value: 2156, id: 5 },
-    ],
-    avg_time: [
-      { name: 'Sarah Johnson', value: 18.9, id: 1 },
-      { name: 'Mike Chen', value: 16.2, id: 2 },
-      { name: 'Emma Davis', value: 14.6, id: 3 },
-      { name: 'David Wilson', value: 13.4, id: 4 },
-      { name: 'Lisa Anderson', value: 12.9, id: 5 },
-    ],
-  }
+  const topCreatorsData = useMemo(
+    () =>
+      creatorsResponse?.data.topCreators ?? {
+        reals_count: [],
+        total_visits: [],
+        avg_time: [],
+      },
+    [creatorsResponse]
+  )
 
   const metricLabels = {
     reals_count: 'REALS Count',
@@ -115,7 +108,7 @@ export function CreatorsSection({
         </CardHeader>
         <CardContent className='pt-2'>
           <div className='text-2xl font-bold' style={{ color: '#203d4d' }}>
-            {creatorsData.totalActive}
+            {creatorsData.totalActive.toLocaleString()}
           </div>
           <p className='text-xs text-gray-500 mt-1'>
             {creatorsData.avgRealsPerCreator} avg REALS
@@ -275,13 +268,13 @@ export function CreatorsSection({
               <InfoTooltip content={tooltipTexts.avgRealsPerCreator} />
             </div>
             <CardDescription className='text-gray-600 text-xs'>
-              {creatorsData.totalReals} REALS total
+              {creatorsData.totalReals.toLocaleString()} REALS total
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold' style={{ color: '#203d4d' }}>
-              {creatorsData.avgRealsPerCreator}
-            </div>
+          <div className='text-2xl font-bold' style={{ color: '#203d4d' }}>
+            {creatorsData.avgRealsPerCreator}
+          </div>
           </CardContent>
         </Card>
 
@@ -326,7 +319,7 @@ export function CreatorsSection({
                   className='text-2xl font-bold'
                   style={{ color: '#203d4d' }}
                 >
-                  3,456
+                  {creatorsData.totalUniqueUsers.toLocaleString()}
                 </div>
               </CardContent>
             </Card>

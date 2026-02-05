@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 
 import {
   Download,
@@ -30,6 +30,9 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table'
+import { useGetCreatorsOverviewQuery } from '@/services/creators/creatorsOverview'
+import { DateContext } from '@/hook/context'
+import dayjs from 'dayjs'
 
 // interface CreatorsTableProps {
 //   dateRange?: { from: Date; to: Date }
@@ -39,6 +42,11 @@ export function CreatorsTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortField, setSortField] = useState('name')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const dateContext = useContext(DateContext)
+  const { data: creatorsResponse, isLoading } = useGetCreatorsOverviewQuery({
+    startDate: dateContext?.date?.startDate ?? undefined,
+    endDate: dateContext?.date?.endDate ?? undefined,
+  })
   const [visibleColumns, setVisibleColumns] = useState({
     name: true,
     email: true,
@@ -51,103 +59,35 @@ export function CreatorsTable() {
     actions: true,
   })
 
-  // Mock data - in real app this would come from API
-  const creatorsData = [
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@company.com',
-      totalCreated: 87,
-      totalVisits: 3247,
-      uniqueUsers: 2456,
-      avgTimeSpent: '18h 45m',
-      firstRealCreated: '2024-03-15 09:30',
-      lastActivity: '2025-01-07 16:45',
-    },
-    {
-      id: 2,
-      name: 'Mike Chen',
-      email: 'mike.chen@company.com',
-      totalCreated: 76,
-      totalVisits: 2856,
-      uniqueUsers: 2134,
-      avgTimeSpent: '16h 32m',
-      firstRealCreated: '2024-04-22 14:15',
-      lastActivity: '2025-01-06 11:30',
-    },
-    {
-      id: 3,
-      name: 'Emma Davis',
-      email: 'emma.davis@company.com',
-      totalCreated: 65,
-      totalVisits: 2543,
-      uniqueUsers: 1987,
-      avgTimeSpent: '15h 18m',
-      firstRealCreated: '2024-05-03 10:45',
-      lastActivity: '2025-01-05 13:18',
-    },
-    {
-      id: 4,
-      name: 'David Wilson',
-      email: 'david.wilson@company.com',
-      totalCreated: 58,
-      totalVisits: 2289,
-      uniqueUsers: 1743,
-      avgTimeSpent: '14h 22m',
-      firstRealCreated: '2024-06-11 16:20',
-      lastActivity: '2025-01-04 14:52',
-    },
-    {
-      id: 5,
-      name: 'Lisa Anderson',
-      email: 'lisa.anderson@company.com',
-      totalCreated: 54,
-      totalVisits: 2156,
-      uniqueUsers: 1654,
-      avgTimeSpent: '13h 56m',
-      firstRealCreated: '2024-07-18 11:10',
-      lastActivity: '2025-01-03 09:40',
-    },
-    {
-      id: 6,
-      name: 'John Martinez',
-      email: 'john.martinez@company.com',
-      totalCreated: 42,
-      totalVisits: 1876,
-      uniqueUsers: 1432,
-      avgTimeSpent: '12h 34m',
-      firstRealCreated: '2024-08-25 13:45',
-      lastActivity: '2025-01-02 17:22',
-    },
-    {
-      id: 7,
-      name: 'Amy Taylor',
-      email: 'amy.taylor@company.com',
-      totalCreated: 39,
-      totalVisits: 1654,
-      uniqueUsers: 1287,
-      avgTimeSpent: '11h 48m',
-      firstRealCreated: '2024-09-12 08:30',
-      lastActivity: '2025-01-01 15:18',
-    },
-  ]
+  const creatorsData = creatorsResponse?.data.creators ?? []
 
-  const filteredAndSortedData = creatorsData
-    .filter(
-      creator =>
-        creator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        creator.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
+  const filteredAndSortedData = useMemo(() => {
+    const filtered = creatorsData.filter(creator => {
+      const name = (creator.name || '').toLowerCase()
+      const email = (creator.email || '').toLowerCase()
+      const term = searchTerm.toLowerCase()
+      return name.includes(term) || email.includes(term)
+    })
+
+    return filtered.sort((a, b) => {
+      const direction = sortDirection === 'asc' ? 1 : -1
       const aValue = a[sortField as keyof typeof a]
       const bValue = b[sortField as keyof typeof b]
-      const direction = sortDirection === 'asc' ? 1 : -1
+
+      if (sortField === 'firstRealCreated' || sortField === 'lastActivity') {
+        const aDate = aValue ? new Date(aValue as string).getTime() : 0
+        const bDate = bValue ? new Date(bValue as string).getTime() : 0
+        return (aDate - bDate) * direction
+      }
 
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         return aValue.localeCompare(bValue) * direction
       }
-      return ((aValue as number) - (bValue as number)) * direction
+      const aNum = typeof aValue === 'number' ? aValue : 0
+      const bNum = typeof bValue === 'number' ? bValue : 0
+      return (aNum - bNum) * direction
     })
+  }, [creatorsData, searchTerm, sortField, sortDirection])
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -172,6 +112,11 @@ export function CreatorsTable() {
   const handleManagePermissions = (creatorId: number, creatorName: string) => {
     toast.success(`Managing permissions for ${creatorName}`)
   }
+
+  const formatDate = (value: string | null) =>
+    value ? dayjs(value).format('YYYY-MM-DD HH:mm') : '-'
+
+  const formatAvgTime = (value: number) => `${value.toFixed(2)} min`
 
   const handleExportCSV = () => {
     const headers = Object.keys(visibleColumns)
@@ -214,6 +159,12 @@ export function CreatorsTable() {
           )
           .map(key => {
             const value = creator[key as keyof typeof creator]
+            if (key === 'avgTimeSpent') {
+              return `"${formatAvgTime(value as number)}"`
+            }
+            if (key === 'firstRealCreated' || key === 'lastActivity') {
+              return `"${formatDate(value as string | null)}"`
+            }
             return typeof value === 'string' ? `"${value}"` : value
           })
           .join(',')
@@ -300,6 +251,9 @@ export function CreatorsTable() {
         </div>
       </CardHeader>
       <CardContent>
+        {isLoading && (
+          <div className='text-center py-8 text-gray-500'>Loading...</div>
+        )}
         <div className='overflow-x-auto'>
           <Table>
             <TableHeader>
@@ -395,12 +349,12 @@ export function CreatorsTable() {
                       className='font-medium'
                       style={{ color: '#203d4d' }}
                     >
-                      {creator.name}
+                      {creator.name || 'Unknown'}
                     </TableCell>
                   )}
                   {visibleColumns.email && (
                     <TableCell className='text-gray-600'>
-                      {creator.email}
+                      {creator.email || '-'}
                     </TableCell>
                   )}
                   {visibleColumns.totalCreated && (
@@ -420,17 +374,17 @@ export function CreatorsTable() {
                   )}
                   {visibleColumns.avgTimeSpent && (
                     <TableCell className='text-right'>
-                      {creator.avgTimeSpent}
+                      {formatAvgTime(creator.avgTimeSpent)}
                     </TableCell>
                   )}
                   {visibleColumns.firstRealCreated && (
                     <TableCell className='text-gray-600 text-sm'>
-                      {creator.firstRealCreated}
+                      {formatDate(creator.firstRealCreated)}
                     </TableCell>
                   )}
                   {visibleColumns.lastActivity && (
                     <TableCell className='text-gray-600 text-sm'>
-                      {creator.lastActivity}
+                      {formatDate(creator.lastActivity)}
                     </TableCell>
                   )}
                   {visibleColumns.actions && (
@@ -466,7 +420,7 @@ export function CreatorsTable() {
             </TableBody>
           </Table>
         </div>
-        {filteredAndSortedData.length === 0 && (
+        {!isLoading && filteredAndSortedData.length === 0 && (
           <div className='text-center py-8 text-gray-500'>
             No creators found matching your search criteria.
           </div>

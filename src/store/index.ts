@@ -10,6 +10,7 @@ import { performanceChart } from '@/services/units/performaceChart'
 import { unitDashboard } from '@/services/units/unitDashboard'
 import { unitDataApi } from '@/services/units/unitData'
 import { configureStore } from '@reduxjs/toolkit'
+import { creatorsOverview } from '@/services/creators/creatorsOverview'
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     [unitDataApi.reducerPath]: unitDataApi.reducer,
     [performanceChart.reducerPath]: performanceChart.reducer,
     [popupSlides.reducerPath]: popupSlides.reducer,
+    [creatorsOverview.reducerPath]: creatorsOverview.reducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(
@@ -37,7 +39,8 @@ export const store = configureStore({
       unitDashboard.middleware,
       unitDataApi.middleware,
       performanceChart.middleware,
-      popupSlides.middleware
+      popupSlides.middleware,
+      creatorsOverview.middleware
     ),
 })
 
