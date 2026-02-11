@@ -119,7 +119,7 @@ export function UnitsSection({
               (data?.TotalUnits ?? 0)
             )}
           </div>
-          <p className='text-xs text-gray-500 mt-1'>
+          <div className='text-xs text-gray-500 mt-1'>
             {isLoading ? (
               <div
                 className='skeleton-number'
@@ -128,7 +128,7 @@ export function UnitsSection({
             ) : (
               <div>{data?.unitOpenRate ?? 0} % open rate</div>
             )}
-          </p>
+          </div>
         </CardContent>
       </Card>
     )
@@ -319,7 +319,7 @@ export function UnitsSection({
                 <div> {data?.unitOpenRate ?? 0}%</div>
               )}
             </div>
-            <p
+            <div
               className='text-xs text-gray-500 mt-1'
               style={{ color: '#203d4d' }}
             >
@@ -328,7 +328,7 @@ export function UnitsSection({
               ) : (
                 <div> ( {data?.totalunitOpen ?? 0} ) units</div>
               )}
-            </p>
+            </div>
           </CardContent>
         </Card>
 

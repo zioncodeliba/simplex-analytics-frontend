@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from '../baseQuery'
 export interface UnitItem {
   name: string
   availability: string
@@ -36,9 +37,7 @@ export interface UnitApiParams {
 export const unitDataApi = createApi({
   reducerPath: 'unitDataApi',
 
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
 
   endpoints: builder => ({
     getUnitData: builder.query<UnitApiResponse, UnitApiParams>({

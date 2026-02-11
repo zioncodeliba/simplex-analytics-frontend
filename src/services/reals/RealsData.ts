@@ -15,6 +15,7 @@ export interface RealData {
   slides: number
   visits: number
   uniqUsers: number
+  currentUrl?: string | null
 }
 
 // 🟢 2️⃣ Define the API Response Type

@@ -2,11 +2,8 @@
 
 import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
 
 export function LogoutButton() {
-  const router = useRouter()
-
   const logout = async (): Promise<void> => {
     try {
       await axios.get(
@@ -18,7 +15,10 @@ export function LogoutButton() {
       )
 
       toast.success('Logged out successfully')
-      router.push('/login')
+      const loginUrl =
+        process.env.NEXT_PUBLIC_CLIENT_LOGIN ||
+        'https://devreals2.simplex3d.com/authenticator/login'
+      window.location.href = loginUrl
     } catch (error) {
       const err = error as AxiosError<{ message?: string }>
 

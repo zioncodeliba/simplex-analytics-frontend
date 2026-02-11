@@ -73,10 +73,9 @@ type RealRow = {
   slidesRetention: number | null | undefined
   interactions: number | null | undefined
   totalDuration: number
-  avgTimeRetention: number | null | undefined
   visits: number
   uniqUsers: number
-  currentUrl: string
+  currentUrl?: string | null
   totalTime: string | null | undefined
   avgTime: number | null | undefined
   firstSeen: string
@@ -329,7 +328,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
     slidesRetention: true,
     interactions: true,
     totalDuration: true,
-    avgTimeRetention: true,
     visits: true,
     uniqueUsers: true,
     avgTime: true,
@@ -369,7 +367,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
     slidesRetention: 'slidesRetention',
     interactions: 'interactions',
     totalDuration: 'totalDuration',
-    avgTimeRetention: 'avgTimeRetention',
     visits: 'visits',
     uniqueUsers: 'uniqUsers', // UI key -> data key
     avgTime: 'avgTime',
@@ -397,7 +394,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
       case 'totalDuration':
       case 'slidesRetention':
       case 'interactions':
-      case 'avgTimeRetention':
       case 'avgTime':
         return typeof value === 'number' ? value : Number.NEGATIVE_INFINITY
       default:
@@ -431,13 +427,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
           dataRows.length
         : 0,
     totalDuration: '-',
-    avgTimeRetention:
-      dataRows.length > 0
-        ? dataRows.reduce(
-            (sum, real) => sum + (real?.avgTimeRetention ?? 0),
-            0
-          ) / dataRows.length
-        : 0,
     visits: dataRows.reduce((sum, real) => sum + (real.visits ?? 0), 0),
     uniqueUsers: dataRows.reduce((sum, real) => sum + (real.uniqUsers ?? 0), 0),
     totalTime: '-',
@@ -539,10 +528,20 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
     setColumnFilters({})
   }
 
-  const handleCopyLink = (realId: string) => {
-    const link = `${realId}`
-    navigator.clipboard.writeText(link)
-    toast.success('Link copied to clipboard!')
+  const handleCopyLink = (realId: string, currentUrl?: string | null) => {
+    const fallbackBase =
+      process.env.NEXT_PUBLIC_CLIENT_API ||
+      process.env.NEXT_PUBLIC_REAL_BASE_URL ||
+      'https://devreals2.simplex3d.com'
+    const trimmedCurrent = currentUrl?.trim()
+    const link =
+      trimmedCurrent && trimmedCurrent.length > 0
+        ? trimmedCurrent
+        : `${fallbackBase.replace(/\/$/, '')}/real/${realId}`
+    navigator.clipboard
+      .writeText(link)
+      .then(() => toast.success('Link copied to clipboard!'))
+      .catch(() => toast.error('Failed to copy link'))
   }
 
   const handleExportCSV = () => {
@@ -574,8 +573,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
             return 'Interactions'
           case 'totalDuration':
             return 'Total Duration'
-          case 'avgTimeRetention':
-            return 'Time Retention (%)'
           case 'visits':
             return 'Visits'
           case 'uniqueUsers':
@@ -734,15 +731,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                 Duration <ChevronDown className='w-4 h-4 inline ml-1' />
               </TableHead>
             )}
-            {visibleColumns.avgTimeRetention && (
-              <TableHead
-                className='text-right cursor-pointer'
-                onClick={() => handleSort('avgTimeRetention')}
-                style={{ color: '#203d4d' }}
-              >
-                Time Ret % <ChevronDown className='w-4 h-4 inline ml-1' />
-              </TableHead>
-            )}
             {visibleColumns.visits && (
               <TableHead
                 className='text-right cursor-pointer'
@@ -850,11 +838,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                 {visibleColumns.totalDuration && (
                   <TableCell className='text-right text-gray-500'>
                     {aggregatedData.totalDuration}
-                  </TableCell>
-                )}
-                {visibleColumns.avgTimeRetention && (
-                  <TableCell className='text-right font-bold'>
-                    {Number(aggregatedData.avgTimeRetention).toFixed(1)}%
                   </TableCell>
                 )}
                 {visibleColumns.visits && (
@@ -1055,11 +1038,6 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                     </TableCell>
                   )}
 
-                  {visibleColumns.avgTimeRetention && (
-                    <TableCell className='text-right'>
-                      {real.avgTimeRetention ?? '-'}
-                    </TableCell>
-                  )}
                   {visibleColumns.visits && (
                     <TableCell className='text-right'>{real.visits}</TableCell>
                   )}
@@ -1093,7 +1071,9 @@ export function RealsTable({ onSelectionChange }: RealsTableProps) {
                         <Button
                           size='sm'
                           variant='outline'
-                          onClick={() => handleCopyLink(real.currentUrl)}
+                          onClick={() =>
+                            handleCopyLink(real.realId, real.currentUrl)
+                          }
                           className='h-8 w-8 p-0 bg-white border-gray-300'
                           style={{ color: '#203d4d' }}
                         >

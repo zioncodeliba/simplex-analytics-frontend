@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Navbar from '@/components/Nav'
 import { DateProvider } from '@/hook/DatesContext'
 export default function RootLayout({
@@ -7,7 +8,9 @@ export default function RootLayout({
 }>) {
   return (
     <DateProvider>
-      <Navbar />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
       <main>{children}</main>
     </DateProvider>
   )

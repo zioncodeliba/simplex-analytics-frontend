@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQuerys from '../baseQuery'
 
 /**
  * Response shape for /unit/performance
@@ -29,9 +30,7 @@ export interface GetUnitChartArgs {
 export const performanceChart = createApi({
   reducerPath: 'performanceChart',
 
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  }),
+  baseQuery: baseQuerys,
 
   endpoints: builder => ({
     getUnitChart: builder.query<UnitPerformanceResponse, GetUnitChartArgs>({

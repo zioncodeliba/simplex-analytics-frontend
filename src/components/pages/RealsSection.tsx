@@ -123,15 +123,12 @@ export function RealsSection({
   const tooltipTexts = {
     totalCreated:
       'Total number of REALS created across all projects and creators.',
-    totalOpened:
-      'Number and percentage of created REALS that have been opened by at least one user.',
+    totalOpened: 'Total number of REAL openings across all REALS.',
     uniqueUsers:
       'Total number of distinct users who have interacted with REALS.',
     totalVisits: 'Total number of page visits across all REALS.',
     avgTimePerUser: 'Average time spent per user session across all REALS.',
     avgSlidesRetention: 'Average percentage of slides viewed per REAL session.',
-    avgTimeRetention:
-      'Average percentage of total REAL duration viewed per session.',
   }
 
   // const formatTime = (hours: number) => {
@@ -172,7 +169,7 @@ export function RealsSection({
               (dashboard?.data.realsCount ?? 0)
             )}
           </div>
-          <p className='text-xs text-gray-500 mt-1'>
+          <div className='text-xs text-gray-500 mt-1'>
             {isLoading ? (
               <div
                 className='skeleton-number'
@@ -181,7 +178,7 @@ export function RealsSection({
             ) : (
               (dashboard?.data.avgOpenRate ?? 0) + '  % open rate'
             )}
-          </p>
+          </div>
         </CardContent>
       </Card>
     )
@@ -413,7 +410,7 @@ export function RealsSection({
           <CardHeader className='pb-3'>
             <div className='flex items-center gap-2'>
               <CardTitle className='text-sm' style={{ color: '#203d4d' }}>
-                Total REALS Opened
+                Total REAL Opens
               </CardTitle>
               <InfoTooltip content={tooltipTexts.totalOpened} />
             </div>
@@ -538,37 +535,6 @@ export function RealsSection({
                   ) : (
                     (dashboard?.data.slidesRetention ?? 0) + '%'
                   )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className='bg-white border-gray-200'>
-              <CardHeader className='pb-3'>
-                <div className='flex items-center gap-2'>
-                  <CardTitle className='text-sm' style={{ color: '#203d4d' }}>
-                    Avg Time Retention
-                  </CardTitle>
-                  <InfoTooltip content={tooltipTexts.avgTimeRetention} />
-                </div>
-                <CardDescription className='text-gray-600 text-xs'>
-                  Time completion rate
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className='text-2xl font-bold'
-                  style={{ color: '#203d4d' }}
-                >
-                  <div
-                    className='text-2xl font-bold'
-                    style={{ color: '#203d4d' }}
-                  >
-                    {isLoading || dashLoading ? (
-                      <div className='skeleton-number'></div>
-                    ) : (
-                      (dashboard?.data.avgTimeRetention ?? 0) + '%'
-                    )}
-                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -14,9 +14,11 @@ import Navtab from './Navtab'
 import simplexLogo from '../assets/logo-simplex-light.png'
 import Image from 'next/image'
 import { DateContext } from '@/hook/context'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LogoutButton } from './LogOut'
+import { useGetCurrentUserQuery } from '@/services/userProfile'
+import Cookies from 'js-cookie'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -135,7 +137,14 @@ const Header: React.FC<HeaderProps> = ({ name }) => (
 )
 
 const Navbar = () => {
-  const [name, setName] = useState<string>('')
+  const searchParams = useSearchParams()
+  const hasExternalToken = Boolean(
+    searchParams?.get('token') || Cookies.get('token')
+  )
+  const { data: currentUser } = useGetCurrentUserQuery(undefined, {
+    skip: hasExternalToken,
+  })
+  const name = currentUser?.user?.name ?? ''
   const router = useRouter()
   const urlpath = usePathname()
   let title = 'Management'
@@ -168,11 +177,6 @@ const Navbar = () => {
       endDate: dateRange?.to?.toISOString()?.slice(0, 10) ?? undefined,
     })
   }, [dateRange, setDate])
-  useEffect(() => {
-    const storedName = localStorage.getItem('simplex_name') ?? ''
-    setName(storedName)
-  }, [])
-
   return (
     <div>
       <Header name={name} router={router} />
