@@ -26,6 +26,7 @@ export default tseslint.config(
       '.stylelintcache',
       'tailwind.config.js',
       'postcss.config.js',
+      'next-env.d.ts',
     ],
   },
   {
