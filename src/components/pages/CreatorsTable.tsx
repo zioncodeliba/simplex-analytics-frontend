@@ -59,9 +59,8 @@ export function CreatorsTable() {
     actions: true,
   })
 
-  const creatorsData = creatorsResponse?.data.creators ?? []
-
   const filteredAndSortedData = useMemo(() => {
+    const creatorsData = creatorsResponse?.data.creators ?? []
     const filtered = creatorsData.filter(creator => {
       const name = (creator.name || '').toLowerCase()
       const email = (creator.email || '').toLowerCase()
@@ -87,7 +86,7 @@ export function CreatorsTable() {
       const bNum = typeof bValue === 'number' ? bValue : 0
       return (aNum - bNum) * direction
     })
-  }, [creatorsData, searchTerm, sortField, sortDirection])
+  }, [creatorsResponse?.data.creators, searchTerm, sortField, sortDirection])
 
   const handleSort = (field: string) => {
     if (sortField === field) {
