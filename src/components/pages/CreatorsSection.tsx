@@ -272,9 +272,9 @@ export function CreatorsSection({
             </CardDescription>
           </CardHeader>
           <CardContent>
-          <div className='text-2xl font-bold' style={{ color: '#203d4d' }}>
-            {creatorsData.avgRealsPerCreator}
-          </div>
+            <div className='text-2xl font-bold' style={{ color: '#203d4d' }}>
+              {creatorsData.avgRealsPerCreator}
+            </div>
           </CardContent>
         </Card>
 
